@@ -3,14 +3,14 @@
 from __future__ import annotations
 
 from typing import List
-from typing_extensions import Literal, Annotated, TypedDict
+from typing_extensions import Annotated, TypedDict
 
 from .._utils import PropertyInfo
 
-__all__ = ["SearchExecuteParams"]
+__all__ = ["SearchEngineCountParams"]
 
 
-class SearchExecuteParams(TypedDict, total=False):
+class SearchEngineCountParams(TypedDict, total=False):
     classification_facet: Annotated[List[str], PropertyInfo(alias="classificationFacet")]
     """
     **Classification facet**: Filters results based on hierarchical categories. Each
@@ -73,12 +73,6 @@ class SearchExecuteParams(TypedDict, total=False):
     └── Strafrecht (allgemein)
     ```
     """
-
-    language: Literal["de", "en", "fr", "it", "rm"]
-    """Preferred language for snippets."""
-
-    page: int
-    """Result page (1-based). Maximum page is total results / 10 rounded up."""
 
     query: str
     """**Search query**: Retrieves the count of documents matching the criteria.

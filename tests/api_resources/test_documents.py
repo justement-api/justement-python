@@ -49,15 +49,15 @@ class TestDocuments:
         assert cast(Any, response.is_closed) is True
 
     @parametrize
-    def test_method_reference_retrieve(self, client: Justement) -> None:
-        document = client.documents.reference_retrieve(
+    def test_method_retrieve_by_reference(self, client: Justement) -> None:
+        document = client.documents.retrieve_by_reference(
             doc_ref="docRef",
         )
         assert_matches_type(Document, document, path=["response"])
 
     @parametrize
-    def test_raw_response_reference_retrieve(self, client: Justement) -> None:
-        response = client.documents.with_raw_response.reference_retrieve(
+    def test_raw_response_retrieve_by_reference(self, client: Justement) -> None:
+        response = client.documents.with_raw_response.retrieve_by_reference(
             doc_ref="docRef",
         )
 
@@ -67,8 +67,8 @@ class TestDocuments:
         assert_matches_type(Document, document, path=["response"])
 
     @parametrize
-    def test_streaming_response_reference_retrieve(self, client: Justement) -> None:
-        with client.documents.with_streaming_response.reference_retrieve(
+    def test_streaming_response_retrieve_by_reference(self, client: Justement) -> None:
+        with client.documents.with_streaming_response.retrieve_by_reference(
             doc_ref="docRef",
         ) as response:
             assert not response.is_closed
@@ -115,15 +115,15 @@ class TestAsyncDocuments:
         assert cast(Any, response.is_closed) is True
 
     @parametrize
-    async def test_method_reference_retrieve(self, async_client: AsyncJustement) -> None:
-        document = await async_client.documents.reference_retrieve(
+    async def test_method_retrieve_by_reference(self, async_client: AsyncJustement) -> None:
+        document = await async_client.documents.retrieve_by_reference(
             doc_ref="docRef",
         )
         assert_matches_type(Document, document, path=["response"])
 
     @parametrize
-    async def test_raw_response_reference_retrieve(self, async_client: AsyncJustement) -> None:
-        response = await async_client.documents.with_raw_response.reference_retrieve(
+    async def test_raw_response_retrieve_by_reference(self, async_client: AsyncJustement) -> None:
+        response = await async_client.documents.with_raw_response.retrieve_by_reference(
             doc_ref="docRef",
         )
 
@@ -133,8 +133,8 @@ class TestAsyncDocuments:
         assert_matches_type(Document, document, path=["response"])
 
     @parametrize
-    async def test_streaming_response_reference_retrieve(self, async_client: AsyncJustement) -> None:
-        async with async_client.documents.with_streaming_response.reference_retrieve(
+    async def test_streaming_response_retrieve_by_reference(self, async_client: AsyncJustement) -> None:
+        async with async_client.documents.with_streaming_response.retrieve_by_reference(
             doc_ref="docRef",
         ) as response:
             assert not response.is_closed

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import httpx
 
-from ..types import document_retrieve_params, document_reference_retrieve_params
+from ..types import document_retrieve_params, document_retrieve_by_reference_params
 from .._types import NOT_GIVEN, Body, Query, Headers, NotGiven
 from .._utils import (
     maybe_transform,
@@ -84,7 +84,7 @@ class DocumentsResource(SyncAPIResource):
             cast_to=Document,
         )
 
-    def reference_retrieve(
+    def retrieve_by_reference(
         self,
         *,
         doc_ref: str,
@@ -120,7 +120,7 @@ class DocumentsResource(SyncAPIResource):
                 extra_body=extra_body,
                 timeout=timeout,
                 query=maybe_transform(
-                    {"doc_ref": doc_ref}, document_reference_retrieve_params.DocumentReferenceRetrieveParams
+                    {"doc_ref": doc_ref}, document_retrieve_by_reference_params.DocumentRetrieveByReferenceParams
                 ),
             ),
             cast_to=Document,
@@ -187,7 +187,7 @@ class AsyncDocumentsResource(AsyncAPIResource):
             cast_to=Document,
         )
 
-    async def reference_retrieve(
+    async def retrieve_by_reference(
         self,
         *,
         doc_ref: str,
@@ -223,7 +223,7 @@ class AsyncDocumentsResource(AsyncAPIResource):
                 extra_body=extra_body,
                 timeout=timeout,
                 query=await async_maybe_transform(
-                    {"doc_ref": doc_ref}, document_reference_retrieve_params.DocumentReferenceRetrieveParams
+                    {"doc_ref": doc_ref}, document_retrieve_by_reference_params.DocumentRetrieveByReferenceParams
                 ),
             ),
             cast_to=Document,
@@ -237,8 +237,8 @@ class DocumentsResourceWithRawResponse:
         self.retrieve = to_raw_response_wrapper(
             documents.retrieve,
         )
-        self.reference_retrieve = to_raw_response_wrapper(
-            documents.reference_retrieve,
+        self.retrieve_by_reference = to_raw_response_wrapper(
+            documents.retrieve_by_reference,
         )
 
 
@@ -249,8 +249,8 @@ class AsyncDocumentsResourceWithRawResponse:
         self.retrieve = async_to_raw_response_wrapper(
             documents.retrieve,
         )
-        self.reference_retrieve = async_to_raw_response_wrapper(
-            documents.reference_retrieve,
+        self.retrieve_by_reference = async_to_raw_response_wrapper(
+            documents.retrieve_by_reference,
         )
 
 
@@ -261,8 +261,8 @@ class DocumentsResourceWithStreamingResponse:
         self.retrieve = to_streamed_response_wrapper(
             documents.retrieve,
         )
-        self.reference_retrieve = to_streamed_response_wrapper(
-            documents.reference_retrieve,
+        self.retrieve_by_reference = to_streamed_response_wrapper(
+            documents.retrieve_by_reference,
         )
 
 
@@ -273,6 +273,6 @@ class AsyncDocumentsResourceWithStreamingResponse:
         self.retrieve = async_to_streamed_response_wrapper(
             documents.retrieve,
         )
-        self.reference_retrieve = async_to_streamed_response_wrapper(
-            documents.reference_retrieve,
+        self.retrieve_by_reference = async_to_streamed_response_wrapper(
+            documents.retrieve_by_reference,
         )

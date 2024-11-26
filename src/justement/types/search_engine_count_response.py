@@ -2,6 +2,6 @@
 
 from typing_extensions import TypeAlias
 
-__all__ = ["CountExecuteResponse"]
+__all__ = ["SearchEngineCountResponse"]
 
-CountExecuteResponse: TypeAlias = int
+SearchEngineCountResponse: TypeAlias = int
