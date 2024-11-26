@@ -10,13 +10,13 @@ It is generated with [Stainless](https://www.stainlessapi.com/).
 
 ## Documentation
 
-The REST API documentation can be found on [docs.justement.com](https://docs.justement.com). The full API of this library can be found in [api.md](api.md).
+The REST API documentation can be found on [justement.ch](https://justement.ch/api/docs). The full API of this library can be found in [api.md](api.md).
 
 ## Installation
 
 ```sh
-# install from this staging repo
-pip install git+ssh://git@github.com/stainless-sdks/justement-python.git
+# install from the production repo
+pip install git+ssh://git@github.com/justement-api/justement-python.git
 ```
 
 > [!NOTE]
@@ -27,14 +27,18 @@ pip install git+ssh://git@github.com/stainless-sdks/justement-python.git
 The full API of this library can be found in [api.md](api.md).
 
 ```python
+import os
 from justement import Justement
 
-client = Justement()
-
-document = client.documents.retrieve(
-    doc_id="REPLACE_ME",
+client = Justement(
+    bearer_token=os.environ.get("BEARER_TOKEN"),  # This is the default and can be omitted
 )
-print(document.doc_id)
+
+search_result_snippets = client.search_engine.search(
+    language="de",
+    query="art. 8 abs. 2 BV diskriminierung",
+)
+print(search_result_snippets.result_count)
 ```
 
 While you can provide a `bearer_token` keyword argument,
@@ -47,17 +51,21 @@ so that your Bearer Token is not stored in source control.
 Simply import `AsyncJustement` instead of `Justement` and use `await` with each API call:
 
 ```python
+import os
 import asyncio
 from justement import AsyncJustement
 
-client = AsyncJustement()
+client = AsyncJustement(
+    bearer_token=os.environ.get("BEARER_TOKEN"),  # This is the default and can be omitted
+)
 
 
 async def main() -> None:
-    document = await client.documents.retrieve(
-        doc_id="REPLACE_ME",
+    search_result_snippets = await client.search_engine.search(
+        language="de",
+        query="art. 8 abs. 2 BV diskriminierung",
     )
-    print(document.doc_id)
+    print(search_result_snippets.result_count)
 
 
 asyncio.run(main())
@@ -90,8 +98,9 @@ from justement import Justement
 client = Justement()
 
 try:
-    client.documents.retrieve(
-        doc_id="REPLACE_ME",
+    client.search_engine.search(
+        language="de",
+        query="art. 8 abs. 2 BV diskriminierung",
     )
 except justement.APIConnectionError as e:
     print("The server could not be reached")
@@ -135,8 +144,9 @@ client = Justement(
 )
 
 # Or, configure per-request:
-client.with_options(max_retries=5).documents.retrieve(
-    doc_id="REPLACE_ME",
+client.with_options(max_retries=5).search_engine.search(
+    language="de",
+    query="art. 8 abs. 2 BV diskriminierung",
 )
 ```
 
@@ -160,8 +170,9 @@ client = Justement(
 )
 
 # Override per-request:
-client.with_options(timeout=5.0).documents.retrieve(
-    doc_id="REPLACE_ME",
+client.with_options(timeout=5.0).search_engine.search(
+    language="de",
+    query="art. 8 abs. 2 BV diskriminierung",
 )
 ```
 
@@ -203,18 +214,19 @@ The "raw" Response object can be accessed by prefixing `.with_raw_response.` to 
 from justement import Justement
 
 client = Justement()
-response = client.documents.with_raw_response.retrieve(
-    doc_id="REPLACE_ME",
+response = client.search_engine.with_raw_response.search(
+    language="de",
+    query="art. 8 abs. 2 BV diskriminierung",
 )
 print(response.headers.get('X-My-Header'))
 
-document = response.parse()  # get the object that `documents.retrieve()` would have returned
-print(document.doc_id)
+search_engine = response.parse()  # get the object that `search_engine.search()` would have returned
+print(search_engine.result_count)
 ```
 
-These methods return an [`APIResponse`](https://github.com/stainless-sdks/justement-python/tree/main/src/justement/_response.py) object.
+These methods return an [`APIResponse`](https://github.com/justement-api/justement-python/tree/main/src/justement/_response.py) object.
 
-The async client returns an [`AsyncAPIResponse`](https://github.com/stainless-sdks/justement-python/tree/main/src/justement/_response.py) with the same structure, the only difference being `await`able methods for reading the response content.
+The async client returns an [`AsyncAPIResponse`](https://github.com/justement-api/justement-python/tree/main/src/justement/_response.py) with the same structure, the only difference being `await`able methods for reading the response content.
 
 #### `.with_streaming_response`
 
@@ -223,8 +235,9 @@ The above interface eagerly reads the full response body when you make the reque
 To stream the response body, use `.with_streaming_response` instead, which requires a context manager and only reads the response body once you call `.read()`, `.text()`, `.json()`, `.iter_bytes()`, `.iter_text()`, `.iter_lines()` or `.parse()`. In the async client, these are async methods.
 
 ```python
-with client.documents.with_streaming_response.retrieve(
-    doc_id="REPLACE_ME",
+with client.search_engine.with_streaming_response.search(
+    language="de",
+    query="art. 8 abs. 2 BV diskriminierung",
 ) as response:
     print(response.headers.get("X-My-Header"))
 
@@ -310,7 +323,7 @@ This package generally follows [SemVer](https://semver.org/spec/v2.0.0.html) con
 
 We take backwards-compatibility seriously and work hard to ensure you can rely on a smooth upgrade experience.
 
-We are keen for your feedback; please open an [issue](https://www.github.com/stainless-sdks/justement-python/issues) with questions, bugs, or suggestions.
+We are keen for your feedback; please open an [issue](https://www.github.com/justement-api/justement-python/issues) with questions, bugs, or suggestions.
 
 ### Determining the installed version
 

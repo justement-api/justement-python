@@ -24,7 +24,7 @@ from justement import Justement, AsyncJustement, APIResponseValidationError
 from justement._types import Omit
 from justement._models import BaseModel, FinalRequestOptions
 from justement._constants import RAW_RESPONSE_HEADER
-from justement._exceptions import APIStatusError, APITimeoutError, APIResponseValidationError
+from justement._exceptions import APIStatusError, JustementError, APITimeoutError, APIResponseValidationError
 from justement._base_client import (
     DEFAULT_TIMEOUT,
     HTTPX_DEFAULT_TIMEOUT,
@@ -338,6 +338,16 @@ class TestJustement:
         request = client2._build_request(FinalRequestOptions(method="get", url="/foo"))
         assert request.headers.get("x-foo") == "stainless"
         assert request.headers.get("x-stainless-lang") == "my-overriding-header"
+
+    def test_validate_headers(self) -> None:
+        client = Justement(base_url=base_url, bearer_token=bearer_token, _strict_response_validation=True)
+        request = client._build_request(FinalRequestOptions(method="get", url="/foo"))
+        assert request.headers.get("Authorization") == f"Bearer {bearer_token}"
+
+        with pytest.raises(JustementError):
+            with update_env(**{"BEARER_TOKEN": Omit()}):
+                client2 = Justement(base_url=base_url, bearer_token=None, _strict_response_validation=True)
+            _ = client2
 
     def test_default_query_option(self) -> None:
         client = Justement(
@@ -729,24 +739,20 @@ class TestJustement:
     @mock.patch("justement._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
     def test_retrying_timeout_errors_doesnt_leak(self, respx_mock: MockRouter) -> None:
-        respx_mock.get("/api/document").mock(side_effect=httpx.TimeoutException("Test timeout error"))
+        respx_mock.get("/api/search").mock(side_effect=httpx.TimeoutException("Test timeout error"))
 
         with pytest.raises(APITimeoutError):
-            self.client.get(
-                "/api/document", cast_to=httpx.Response, options={"headers": {RAW_RESPONSE_HEADER: "stream"}}
-            )
+            self.client.get("/api/search", cast_to=httpx.Response, options={"headers": {RAW_RESPONSE_HEADER: "stream"}})
 
         assert _get_open_connections(self.client) == 0
 
     @mock.patch("justement._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
     def test_retrying_status_errors_doesnt_leak(self, respx_mock: MockRouter) -> None:
-        respx_mock.get("/api/document").mock(return_value=httpx.Response(500))
+        respx_mock.get("/api/search").mock(return_value=httpx.Response(500))
 
         with pytest.raises(APIStatusError):
-            self.client.get(
-                "/api/document", cast_to=httpx.Response, options={"headers": {RAW_RESPONSE_HEADER: "stream"}}
-            )
+            self.client.get("/api/search", cast_to=httpx.Response, options={"headers": {RAW_RESPONSE_HEADER: "stream"}})
 
         assert _get_open_connections(self.client) == 0
 
@@ -774,9 +780,9 @@ class TestJustement:
                 return httpx.Response(500)
             return httpx.Response(200)
 
-        respx_mock.get("/api/document").mock(side_effect=retry_handler)
+        respx_mock.get("/api/search").mock(side_effect=retry_handler)
 
-        response = client.documents.with_raw_response.retrieve(doc_id="docId")
+        response = client.search_engine.with_raw_response.search()
 
         assert response.retries_taken == failures_before_success
         assert int(response.http_request.headers.get("x-stainless-retry-count")) == failures_before_success
@@ -798,11 +804,9 @@ class TestJustement:
                 return httpx.Response(500)
             return httpx.Response(200)
 
-        respx_mock.get("/api/document").mock(side_effect=retry_handler)
+        respx_mock.get("/api/search").mock(side_effect=retry_handler)
 
-        response = client.documents.with_raw_response.retrieve(
-            doc_id="docId", extra_headers={"x-stainless-retry-count": Omit()}
-        )
+        response = client.search_engine.with_raw_response.search(extra_headers={"x-stainless-retry-count": Omit()})
 
         assert len(response.http_request.headers.get_list("x-stainless-retry-count")) == 0
 
@@ -823,11 +827,9 @@ class TestJustement:
                 return httpx.Response(500)
             return httpx.Response(200)
 
-        respx_mock.get("/api/document").mock(side_effect=retry_handler)
+        respx_mock.get("/api/search").mock(side_effect=retry_handler)
 
-        response = client.documents.with_raw_response.retrieve(
-            doc_id="docId", extra_headers={"x-stainless-retry-count": "42"}
-        )
+        response = client.search_engine.with_raw_response.search(extra_headers={"x-stainless-retry-count": "42"})
 
         assert response.http_request.headers.get("x-stainless-retry-count") == "42"
 
@@ -1116,6 +1118,16 @@ class TestAsyncJustement:
         request = client2._build_request(FinalRequestOptions(method="get", url="/foo"))
         assert request.headers.get("x-foo") == "stainless"
         assert request.headers.get("x-stainless-lang") == "my-overriding-header"
+
+    def test_validate_headers(self) -> None:
+        client = AsyncJustement(base_url=base_url, bearer_token=bearer_token, _strict_response_validation=True)
+        request = client._build_request(FinalRequestOptions(method="get", url="/foo"))
+        assert request.headers.get("Authorization") == f"Bearer {bearer_token}"
+
+        with pytest.raises(JustementError):
+            with update_env(**{"BEARER_TOKEN": Omit()}):
+                client2 = AsyncJustement(base_url=base_url, bearer_token=None, _strict_response_validation=True)
+            _ = client2
 
     def test_default_query_option(self) -> None:
         client = AsyncJustement(
@@ -1511,11 +1523,11 @@ class TestAsyncJustement:
     @mock.patch("justement._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
     async def test_retrying_timeout_errors_doesnt_leak(self, respx_mock: MockRouter) -> None:
-        respx_mock.get("/api/document").mock(side_effect=httpx.TimeoutException("Test timeout error"))
+        respx_mock.get("/api/search").mock(side_effect=httpx.TimeoutException("Test timeout error"))
 
         with pytest.raises(APITimeoutError):
             await self.client.get(
-                "/api/document", cast_to=httpx.Response, options={"headers": {RAW_RESPONSE_HEADER: "stream"}}
+                "/api/search", cast_to=httpx.Response, options={"headers": {RAW_RESPONSE_HEADER: "stream"}}
             )
 
         assert _get_open_connections(self.client) == 0
@@ -1523,11 +1535,11 @@ class TestAsyncJustement:
     @mock.patch("justement._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
     async def test_retrying_status_errors_doesnt_leak(self, respx_mock: MockRouter) -> None:
-        respx_mock.get("/api/document").mock(return_value=httpx.Response(500))
+        respx_mock.get("/api/search").mock(return_value=httpx.Response(500))
 
         with pytest.raises(APIStatusError):
             await self.client.get(
-                "/api/document", cast_to=httpx.Response, options={"headers": {RAW_RESPONSE_HEADER: "stream"}}
+                "/api/search", cast_to=httpx.Response, options={"headers": {RAW_RESPONSE_HEADER: "stream"}}
             )
 
         assert _get_open_connections(self.client) == 0
@@ -1557,9 +1569,9 @@ class TestAsyncJustement:
                 return httpx.Response(500)
             return httpx.Response(200)
 
-        respx_mock.get("/api/document").mock(side_effect=retry_handler)
+        respx_mock.get("/api/search").mock(side_effect=retry_handler)
 
-        response = await client.documents.with_raw_response.retrieve(doc_id="docId")
+        response = await client.search_engine.with_raw_response.search()
 
         assert response.retries_taken == failures_before_success
         assert int(response.http_request.headers.get("x-stainless-retry-count")) == failures_before_success
@@ -1582,10 +1594,10 @@ class TestAsyncJustement:
                 return httpx.Response(500)
             return httpx.Response(200)
 
-        respx_mock.get("/api/document").mock(side_effect=retry_handler)
+        respx_mock.get("/api/search").mock(side_effect=retry_handler)
 
-        response = await client.documents.with_raw_response.retrieve(
-            doc_id="docId", extra_headers={"x-stainless-retry-count": Omit()}
+        response = await client.search_engine.with_raw_response.search(
+            extra_headers={"x-stainless-retry-count": Omit()}
         )
 
         assert len(response.http_request.headers.get_list("x-stainless-retry-count")) == 0
@@ -1608,11 +1620,9 @@ class TestAsyncJustement:
                 return httpx.Response(500)
             return httpx.Response(200)
 
-        respx_mock.get("/api/document").mock(side_effect=retry_handler)
+        respx_mock.get("/api/search").mock(side_effect=retry_handler)
 
-        response = await client.documents.with_raw_response.retrieve(
-            doc_id="docId", extra_headers={"x-stainless-retry-count": "42"}
-        )
+        response = await client.search_engine.with_raw_response.search(extra_headers={"x-stainless-retry-count": "42"})
 
         assert response.http_request.headers.get("x-stainless-retry-count") == "42"
 
