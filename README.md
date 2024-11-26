@@ -15,8 +15,8 @@ The REST API documentation can be found on [docs.justement.com](https://docs.jus
 ## Installation
 
 ```sh
-# install from this staging repo
-pip install git+ssh://git@github.com/stainless-sdks/justement-python.git
+# install from the production repo
+pip install git+ssh://git@github.com/justement-api/justement-python.git
 ```
 
 > [!NOTE]
@@ -212,9 +212,9 @@ document = response.parse()  # get the object that `documents.retrieve()` would 
 print(document.doc_id)
 ```
 
-These methods return an [`APIResponse`](https://github.com/stainless-sdks/justement-python/tree/main/src/justement/_response.py) object.
+These methods return an [`APIResponse`](https://github.com/justement-api/justement-python/tree/main/src/justement/_response.py) object.
 
-The async client returns an [`AsyncAPIResponse`](https://github.com/stainless-sdks/justement-python/tree/main/src/justement/_response.py) with the same structure, the only difference being `await`able methods for reading the response content.
+The async client returns an [`AsyncAPIResponse`](https://github.com/justement-api/justement-python/tree/main/src/justement/_response.py) with the same structure, the only difference being `await`able methods for reading the response content.
 
 #### `.with_streaming_response`
 
@@ -310,7 +310,7 @@ This package generally follows [SemVer](https://semver.org/spec/v2.0.0.html) con
 
 We take backwards-compatibility seriously and work hard to ensure you can rely on a smooth upgrade experience.
 
-We are keen for your feedback; please open an [issue](https://www.github.com/stainless-sdks/justement-python/issues) with questions, bugs, or suggestions.
+We are keen for your feedback; please open an [issue](https://www.github.com/justement-api/justement-python/issues) with questions, bugs, or suggestions.
 
 ### Determining the installed version
 
