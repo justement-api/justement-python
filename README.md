@@ -27,9 +27,12 @@ pip install git+ssh://git@github.com/justement-api/justement-python.git
 The full API of this library can be found in [api.md](api.md).
 
 ```python
+import os
 from justement import Justement
 
-client = Justement()
+client = Justement(
+    bearer_token=os.environ.get("BEARER_TOKEN"),  # This is the default and can be omitted
+)
 
 search_result_snippets = client.search_engine.search(
     language="de",
@@ -48,10 +51,13 @@ so that your Bearer Token is not stored in source control.
 Simply import `AsyncJustement` instead of `Justement` and use `await` with each API call:
 
 ```python
+import os
 import asyncio
 from justement import AsyncJustement
 
-client = AsyncJustement()
+client = AsyncJustement(
+    bearer_token=os.environ.get("BEARER_TOKEN"),  # This is the default and can be omitted
+)
 
 
 async def main() -> None:

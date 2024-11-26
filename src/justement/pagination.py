@@ -11,15 +11,15 @@ _T = TypeVar("_T")
 
 
 class SyncPageNumberPagination(BaseSyncPage[_T], BasePage[_T], Generic[_T]):
-    result_count: Optional[object] = None
-    results: Optional[object] = None
+    results: List[_T]
+    result_count: Optional[int] = None
 
     @override
     def _get_page_items(self) -> List[_T]:
-        data = self.data
-        if not data:
+        results = self.results
+        if not results:
             return []
-        return data
+        return results
 
     @override
     def next_page_info(self) -> Optional[PageInfo]:
@@ -29,15 +29,15 @@ class SyncPageNumberPagination(BaseSyncPage[_T], BasePage[_T], Generic[_T]):
 
 
 class AsyncPageNumberPagination(BaseAsyncPage[_T], BasePage[_T], Generic[_T]):
-    result_count: Optional[object] = None
-    results: Optional[object] = None
+    results: List[_T]
+    result_count: Optional[int] = None
 
     @override
     def _get_page_items(self) -> List[_T]:
-        data = self.data
-        if not data:
+        results = self.results
+        if not results:
             return []
-        return data
+        return results
 
     @override
     def next_page_info(self) -> Optional[PageInfo]:
