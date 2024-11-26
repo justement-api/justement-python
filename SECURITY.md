@@ -20,7 +20,7 @@ or products provided by Justement please follow the respective company's securit
 
 ### Justement Terms and Policies
 
-Please contact dev-feedback@justement.com for any questions or concerns regarding security of our services.
+Please contact support@justement.ch for any questions or concerns regarding security of our services.
 
 ---
 

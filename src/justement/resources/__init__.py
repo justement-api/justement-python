@@ -1,21 +1,5 @@
 # File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
 
-from .count import (
-    CountResource,
-    AsyncCountResource,
-    CountResourceWithRawResponse,
-    AsyncCountResourceWithRawResponse,
-    CountResourceWithStreamingResponse,
-    AsyncCountResourceWithStreamingResponse,
-)
-from .search import (
-    SearchResource,
-    AsyncSearchResource,
-    SearchResourceWithRawResponse,
-    AsyncSearchResourceWithRawResponse,
-    SearchResourceWithStreamingResponse,
-    AsyncSearchResourceWithStreamingResponse,
-)
 from .documents import (
     DocumentsResource,
     AsyncDocumentsResource,
@@ -24,20 +8,22 @@ from .documents import (
     DocumentsResourceWithStreamingResponse,
     AsyncDocumentsResourceWithStreamingResponse,
 )
+from .search_engine import (
+    SearchEngineResource,
+    AsyncSearchEngineResource,
+    SearchEngineResourceWithRawResponse,
+    AsyncSearchEngineResourceWithRawResponse,
+    SearchEngineResourceWithStreamingResponse,
+    AsyncSearchEngineResourceWithStreamingResponse,
+)
 
 __all__ = [
-    "SearchResource",
-    "AsyncSearchResource",
-    "SearchResourceWithRawResponse",
-    "AsyncSearchResourceWithRawResponse",
-    "SearchResourceWithStreamingResponse",
-    "AsyncSearchResourceWithStreamingResponse",
-    "CountResource",
-    "AsyncCountResource",
-    "CountResourceWithRawResponse",
-    "AsyncCountResourceWithRawResponse",
-    "CountResourceWithStreamingResponse",
-    "AsyncCountResourceWithStreamingResponse",
+    "SearchEngineResource",
+    "AsyncSearchEngineResource",
+    "SearchEngineResourceWithRawResponse",
+    "AsyncSearchEngineResourceWithRawResponse",
+    "SearchEngineResourceWithStreamingResponse",
+    "AsyncSearchEngineResourceWithStreamingResponse",
     "DocumentsResource",
     "AsyncDocumentsResource",
     "DocumentsResourceWithRawResponse",

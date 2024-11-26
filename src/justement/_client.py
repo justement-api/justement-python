@@ -46,8 +46,7 @@ __all__ = [
 
 
 class Justement(SyncAPIClient):
-    search: resources.SearchResource
-    count: resources.CountResource
+    search_engine: resources.SearchEngineResource
     documents: resources.DocumentsResource
     with_raw_response: JustementWithRawResponse
     with_streaming_response: JustementWithStreamedResponse
@@ -93,7 +92,7 @@ class Justement(SyncAPIClient):
         if base_url is None:
             base_url = os.environ.get("JUSTEMENT_BASE_URL")
         if base_url is None:
-            base_url = f"https://localhost:8080/test-api"
+            base_url = f"https://justement.ch"
 
         super().__init__(
             version=__version__,
@@ -106,8 +105,7 @@ class Justement(SyncAPIClient):
             _strict_response_validation=_strict_response_validation,
         )
 
-        self.search = resources.SearchResource(self)
-        self.count = resources.CountResource(self)
+        self.search_engine = resources.SearchEngineResource(self)
         self.documents = resources.DocumentsResource(self)
         self.with_raw_response = JustementWithRawResponse(self)
         self.with_streaming_response = JustementWithStreamedResponse(self)
@@ -218,8 +216,7 @@ class Justement(SyncAPIClient):
 
 
 class AsyncJustement(AsyncAPIClient):
-    search: resources.AsyncSearchResource
-    count: resources.AsyncCountResource
+    search_engine: resources.AsyncSearchEngineResource
     documents: resources.AsyncDocumentsResource
     with_raw_response: AsyncJustementWithRawResponse
     with_streaming_response: AsyncJustementWithStreamedResponse
@@ -265,7 +262,7 @@ class AsyncJustement(AsyncAPIClient):
         if base_url is None:
             base_url = os.environ.get("JUSTEMENT_BASE_URL")
         if base_url is None:
-            base_url = f"https://localhost:8080/test-api"
+            base_url = f"https://justement.ch"
 
         super().__init__(
             version=__version__,
@@ -278,8 +275,7 @@ class AsyncJustement(AsyncAPIClient):
             _strict_response_validation=_strict_response_validation,
         )
 
-        self.search = resources.AsyncSearchResource(self)
-        self.count = resources.AsyncCountResource(self)
+        self.search_engine = resources.AsyncSearchEngineResource(self)
         self.documents = resources.AsyncDocumentsResource(self)
         self.with_raw_response = AsyncJustementWithRawResponse(self)
         self.with_streaming_response = AsyncJustementWithStreamedResponse(self)
@@ -391,29 +387,25 @@ class AsyncJustement(AsyncAPIClient):
 
 class JustementWithRawResponse:
     def __init__(self, client: Justement) -> None:
-        self.search = resources.SearchResourceWithRawResponse(client.search)
-        self.count = resources.CountResourceWithRawResponse(client.count)
+        self.search_engine = resources.SearchEngineResourceWithRawResponse(client.search_engine)
         self.documents = resources.DocumentsResourceWithRawResponse(client.documents)
 
 
 class AsyncJustementWithRawResponse:
     def __init__(self, client: AsyncJustement) -> None:
-        self.search = resources.AsyncSearchResourceWithRawResponse(client.search)
-        self.count = resources.AsyncCountResourceWithRawResponse(client.count)
+        self.search_engine = resources.AsyncSearchEngineResourceWithRawResponse(client.search_engine)
         self.documents = resources.AsyncDocumentsResourceWithRawResponse(client.documents)
 
 
 class JustementWithStreamedResponse:
     def __init__(self, client: Justement) -> None:
-        self.search = resources.SearchResourceWithStreamingResponse(client.search)
-        self.count = resources.CountResourceWithStreamingResponse(client.count)
+        self.search_engine = resources.SearchEngineResourceWithStreamingResponse(client.search_engine)
         self.documents = resources.DocumentsResourceWithStreamingResponse(client.documents)
 
 
 class AsyncJustementWithStreamedResponse:
     def __init__(self, client: AsyncJustement) -> None:
-        self.search = resources.AsyncSearchResourceWithStreamingResponse(client.search)
-        self.count = resources.AsyncCountResourceWithStreamingResponse(client.count)
+        self.search_engine = resources.AsyncSearchEngineResourceWithStreamingResponse(client.search_engine)
         self.documents = resources.AsyncDocumentsResourceWithStreamingResponse(client.documents)
 
 
