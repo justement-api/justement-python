@@ -24,7 +24,7 @@ from justement import Justement, AsyncJustement, APIResponseValidationError
 from justement._types import Omit
 from justement._models import BaseModel, FinalRequestOptions
 from justement._constants import RAW_RESPONSE_HEADER
-from justement._exceptions import APIStatusError, APITimeoutError, APIResponseValidationError
+from justement._exceptions import APIStatusError, JustementError, APITimeoutError, APIResponseValidationError
 from justement._base_client import (
     DEFAULT_TIMEOUT,
     HTTPX_DEFAULT_TIMEOUT,
@@ -338,6 +338,16 @@ class TestJustement:
         request = client2._build_request(FinalRequestOptions(method="get", url="/foo"))
         assert request.headers.get("x-foo") == "stainless"
         assert request.headers.get("x-stainless-lang") == "my-overriding-header"
+
+    def test_validate_headers(self) -> None:
+        client = Justement(base_url=base_url, bearer_token=bearer_token, _strict_response_validation=True)
+        request = client._build_request(FinalRequestOptions(method="get", url="/foo"))
+        assert request.headers.get("Authorization") == f"Bearer {bearer_token}"
+
+        with pytest.raises(JustementError):
+            with update_env(**{"BEARER_TOKEN": Omit()}):
+                client2 = Justement(base_url=base_url, bearer_token=None, _strict_response_validation=True)
+            _ = client2
 
     def test_default_query_option(self) -> None:
         client = Justement(
@@ -1108,6 +1118,16 @@ class TestAsyncJustement:
         request = client2._build_request(FinalRequestOptions(method="get", url="/foo"))
         assert request.headers.get("x-foo") == "stainless"
         assert request.headers.get("x-stainless-lang") == "my-overriding-header"
+
+    def test_validate_headers(self) -> None:
+        client = AsyncJustement(base_url=base_url, bearer_token=bearer_token, _strict_response_validation=True)
+        request = client._build_request(FinalRequestOptions(method="get", url="/foo"))
+        assert request.headers.get("Authorization") == f"Bearer {bearer_token}"
+
+        with pytest.raises(JustementError):
+            with update_env(**{"BEARER_TOKEN": Omit()}):
+                client2 = AsyncJustement(base_url=base_url, bearer_token=None, _strict_response_validation=True)
+            _ = client2
 
     def test_default_query_option(self) -> None:
         client = AsyncJustement(
