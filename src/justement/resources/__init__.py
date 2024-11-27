@@ -1,33 +1,33 @@
 # File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
 
-from .documents import (
-    DocumentsResource,
-    AsyncDocumentsResource,
-    DocumentsResourceWithRawResponse,
-    AsyncDocumentsResourceWithRawResponse,
-    DocumentsResourceWithStreamingResponse,
-    AsyncDocumentsResourceWithStreamingResponse,
+from .snippet import (
+    SnippetResource,
+    AsyncSnippetResource,
+    SnippetResourceWithRawResponse,
+    AsyncSnippetResourceWithRawResponse,
+    SnippetResourceWithStreamingResponse,
+    AsyncSnippetResourceWithStreamingResponse,
 )
-from .search_engine import (
-    SearchEngineResource,
-    AsyncSearchEngineResource,
-    SearchEngineResourceWithRawResponse,
-    AsyncSearchEngineResourceWithRawResponse,
-    SearchEngineResourceWithStreamingResponse,
-    AsyncSearchEngineResourceWithStreamingResponse,
+from .document import (
+    DocumentResource,
+    AsyncDocumentResource,
+    DocumentResourceWithRawResponse,
+    AsyncDocumentResourceWithRawResponse,
+    DocumentResourceWithStreamingResponse,
+    AsyncDocumentResourceWithStreamingResponse,
 )
 
 __all__ = [
-    "SearchEngineResource",
-    "AsyncSearchEngineResource",
-    "SearchEngineResourceWithRawResponse",
-    "AsyncSearchEngineResourceWithRawResponse",
-    "SearchEngineResourceWithStreamingResponse",
-    "AsyncSearchEngineResourceWithStreamingResponse",
-    "DocumentsResource",
-    "AsyncDocumentsResource",
-    "DocumentsResourceWithRawResponse",
-    "AsyncDocumentsResourceWithRawResponse",
-    "DocumentsResourceWithStreamingResponse",
-    "AsyncDocumentsResourceWithStreamingResponse",
+    "DocumentResource",
+    "AsyncDocumentResource",
+    "DocumentResourceWithRawResponse",
+    "AsyncDocumentResourceWithRawResponse",
+    "DocumentResourceWithStreamingResponse",
+    "AsyncDocumentResourceWithStreamingResponse",
+    "SnippetResource",
+    "AsyncSnippetResource",
+    "SnippetResourceWithRawResponse",
+    "AsyncSnippetResourceWithRawResponse",
+    "SnippetResourceWithStreamingResponse",
+    "AsyncSnippetResourceWithStreamingResponse",
 ]

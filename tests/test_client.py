@@ -23,8 +23,7 @@ from pydantic import ValidationError
 from justement import Justement, AsyncJustement, APIResponseValidationError
 from justement._types import Omit
 from justement._models import BaseModel, FinalRequestOptions
-from justement._constants import RAW_RESPONSE_HEADER
-from justement._exceptions import APIStatusError, JustementError, APITimeoutError, APIResponseValidationError
+from justement._exceptions import JustementError, APIResponseValidationError
 from justement._base_client import (
     DEFAULT_TIMEOUT,
     HTTPX_DEFAULT_TIMEOUT,
@@ -35,7 +34,7 @@ from justement._base_client import (
 from .utils import update_env
 
 base_url = os.environ.get("TEST_API_BASE_URL", "http://127.0.0.1:4010")
-bearer_token = "My Bearer Token"
+api_key = "My API Key"
 
 
 def _get_params(client: BaseClient[Any, Any]) -> dict[str, str]:
@@ -48,16 +47,8 @@ def _low_retry_timeout(*_args: Any, **_kwargs: Any) -> float:
     return 0.1
 
 
-def _get_open_connections(client: Justement | AsyncJustement) -> int:
-    transport = client._client._transport
-    assert isinstance(transport, httpx.HTTPTransport) or isinstance(transport, httpx.AsyncHTTPTransport)
-
-    pool = transport._pool
-    return len(pool._requests)
-
-
 class TestJustement:
-    client = Justement(base_url=base_url, bearer_token=bearer_token, _strict_response_validation=True)
+    client = Justement(base_url=base_url, api_key=api_key, _strict_response_validation=True)
 
     @pytest.mark.respx(base_url=base_url)
     def test_raw_response(self, respx_mock: MockRouter) -> None:
@@ -83,9 +74,9 @@ class TestJustement:
         copied = self.client.copy()
         assert id(copied) != id(self.client)
 
-        copied = self.client.copy(bearer_token="another My Bearer Token")
-        assert copied.bearer_token == "another My Bearer Token"
-        assert self.client.bearer_token == "My Bearer Token"
+        copied = self.client.copy(api_key="another My API Key")
+        assert copied.api_key == "another My API Key"
+        assert self.client.api_key == "My API Key"
 
     def test_copy_default_options(self) -> None:
         # options that have a default are overridden correctly
@@ -105,10 +96,7 @@ class TestJustement:
 
     def test_copy_default_headers(self) -> None:
         client = Justement(
-            base_url=base_url,
-            bearer_token=bearer_token,
-            _strict_response_validation=True,
-            default_headers={"X-Foo": "bar"},
+            base_url=base_url, api_key=api_key, _strict_response_validation=True, default_headers={"X-Foo": "bar"}
         )
         assert client.default_headers["X-Foo"] == "bar"
 
@@ -142,7 +130,7 @@ class TestJustement:
 
     def test_copy_default_query(self) -> None:
         client = Justement(
-            base_url=base_url, bearer_token=bearer_token, _strict_response_validation=True, default_query={"foo": "bar"}
+            base_url=base_url, api_key=api_key, _strict_response_validation=True, default_query={"foo": "bar"}
         )
         assert _get_params(client)["foo"] == "bar"
 
@@ -267,7 +255,7 @@ class TestJustement:
 
     def test_client_timeout_option(self) -> None:
         client = Justement(
-            base_url=base_url, bearer_token=bearer_token, _strict_response_validation=True, timeout=httpx.Timeout(0)
+            base_url=base_url, api_key=api_key, _strict_response_validation=True, timeout=httpx.Timeout(0)
         )
 
         request = client._build_request(FinalRequestOptions(method="get", url="/foo"))
@@ -278,7 +266,7 @@ class TestJustement:
         # custom timeout given to the httpx client should be used
         with httpx.Client(timeout=None) as http_client:
             client = Justement(
-                base_url=base_url, bearer_token=bearer_token, _strict_response_validation=True, http_client=http_client
+                base_url=base_url, api_key=api_key, _strict_response_validation=True, http_client=http_client
             )
 
             request = client._build_request(FinalRequestOptions(method="get", url="/foo"))
@@ -288,7 +276,7 @@ class TestJustement:
         # no timeout given to the httpx client should not use the httpx default
         with httpx.Client() as http_client:
             client = Justement(
-                base_url=base_url, bearer_token=bearer_token, _strict_response_validation=True, http_client=http_client
+                base_url=base_url, api_key=api_key, _strict_response_validation=True, http_client=http_client
             )
 
             request = client._build_request(FinalRequestOptions(method="get", url="/foo"))
@@ -298,7 +286,7 @@ class TestJustement:
         # explicitly passing the default timeout currently results in it being ignored
         with httpx.Client(timeout=HTTPX_DEFAULT_TIMEOUT) as http_client:
             client = Justement(
-                base_url=base_url, bearer_token=bearer_token, _strict_response_validation=True, http_client=http_client
+                base_url=base_url, api_key=api_key, _strict_response_validation=True, http_client=http_client
             )
 
             request = client._build_request(FinalRequestOptions(method="get", url="/foo"))
@@ -310,17 +298,14 @@ class TestJustement:
             async with httpx.AsyncClient() as http_client:
                 Justement(
                     base_url=base_url,
-                    bearer_token=bearer_token,
+                    api_key=api_key,
                     _strict_response_validation=True,
                     http_client=cast(Any, http_client),
                 )
 
     def test_default_headers_option(self) -> None:
         client = Justement(
-            base_url=base_url,
-            bearer_token=bearer_token,
-            _strict_response_validation=True,
-            default_headers={"X-Foo": "bar"},
+            base_url=base_url, api_key=api_key, _strict_response_validation=True, default_headers={"X-Foo": "bar"}
         )
         request = client._build_request(FinalRequestOptions(method="get", url="/foo"))
         assert request.headers.get("x-foo") == "bar"
@@ -328,7 +313,7 @@ class TestJustement:
 
         client2 = Justement(
             base_url=base_url,
-            bearer_token=bearer_token,
+            api_key=api_key,
             _strict_response_validation=True,
             default_headers={
                 "X-Foo": "stainless",
@@ -340,21 +325,18 @@ class TestJustement:
         assert request.headers.get("x-stainless-lang") == "my-overriding-header"
 
     def test_validate_headers(self) -> None:
-        client = Justement(base_url=base_url, bearer_token=bearer_token, _strict_response_validation=True)
+        client = Justement(base_url=base_url, api_key=api_key, _strict_response_validation=True)
         request = client._build_request(FinalRequestOptions(method="get", url="/foo"))
-        assert request.headers.get("Authorization") == f"Bearer {bearer_token}"
+        assert request.headers.get("Authorization") == f"Bearer {api_key}"
 
         with pytest.raises(JustementError):
-            with update_env(**{"BEARER_TOKEN": Omit()}):
-                client2 = Justement(base_url=base_url, bearer_token=None, _strict_response_validation=True)
+            with update_env(**{"API_KEY": Omit()}):
+                client2 = Justement(base_url=base_url, api_key=None, _strict_response_validation=True)
             _ = client2
 
     def test_default_query_option(self) -> None:
         client = Justement(
-            base_url=base_url,
-            bearer_token=bearer_token,
-            _strict_response_validation=True,
-            default_query={"query_param": "bar"},
+            base_url=base_url, api_key=api_key, _strict_response_validation=True, default_query={"query_param": "bar"}
         )
         request = client._build_request(FinalRequestOptions(method="get", url="/foo"))
         url = httpx.URL(request.url)
@@ -554,9 +536,7 @@ class TestJustement:
         assert response.foo == 2
 
     def test_base_url_setter(self) -> None:
-        client = Justement(
-            base_url="https://example.com/from_init", bearer_token=bearer_token, _strict_response_validation=True
-        )
+        client = Justement(base_url="https://example.com/from_init", api_key=api_key, _strict_response_validation=True)
         assert client.base_url == "https://example.com/from_init/"
 
         client.base_url = "https://example.com/from_setter"  # type: ignore[assignment]
@@ -565,20 +545,16 @@ class TestJustement:
 
     def test_base_url_env(self) -> None:
         with update_env(JUSTEMENT_BASE_URL="http://localhost:5000/from/env"):
-            client = Justement(bearer_token=bearer_token, _strict_response_validation=True)
+            client = Justement(api_key=api_key, _strict_response_validation=True)
             assert client.base_url == "http://localhost:5000/from/env/"
 
     @pytest.mark.parametrize(
         "client",
         [
+            Justement(base_url="http://localhost:5000/custom/path/", api_key=api_key, _strict_response_validation=True),
             Justement(
                 base_url="http://localhost:5000/custom/path/",
-                bearer_token=bearer_token,
-                _strict_response_validation=True,
-            ),
-            Justement(
-                base_url="http://localhost:5000/custom/path/",
-                bearer_token=bearer_token,
+                api_key=api_key,
                 _strict_response_validation=True,
                 http_client=httpx.Client(),
             ),
@@ -598,14 +574,10 @@ class TestJustement:
     @pytest.mark.parametrize(
         "client",
         [
+            Justement(base_url="http://localhost:5000/custom/path/", api_key=api_key, _strict_response_validation=True),
             Justement(
                 base_url="http://localhost:5000/custom/path/",
-                bearer_token=bearer_token,
-                _strict_response_validation=True,
-            ),
-            Justement(
-                base_url="http://localhost:5000/custom/path/",
-                bearer_token=bearer_token,
+                api_key=api_key,
                 _strict_response_validation=True,
                 http_client=httpx.Client(),
             ),
@@ -625,14 +597,10 @@ class TestJustement:
     @pytest.mark.parametrize(
         "client",
         [
+            Justement(base_url="http://localhost:5000/custom/path/", api_key=api_key, _strict_response_validation=True),
             Justement(
                 base_url="http://localhost:5000/custom/path/",
-                bearer_token=bearer_token,
-                _strict_response_validation=True,
-            ),
-            Justement(
-                base_url="http://localhost:5000/custom/path/",
-                bearer_token=bearer_token,
+                api_key=api_key,
                 _strict_response_validation=True,
                 http_client=httpx.Client(),
             ),
@@ -650,7 +618,7 @@ class TestJustement:
         assert request.url == "https://myapi.com/foo"
 
     def test_copied_client_does_not_close_http(self) -> None:
-        client = Justement(base_url=base_url, bearer_token=bearer_token, _strict_response_validation=True)
+        client = Justement(base_url=base_url, api_key=api_key, _strict_response_validation=True)
         assert not client.is_closed()
 
         copied = client.copy()
@@ -661,7 +629,7 @@ class TestJustement:
         assert not client.is_closed()
 
     def test_client_context_manager(self) -> None:
-        client = Justement(base_url=base_url, bearer_token=bearer_token, _strict_response_validation=True)
+        client = Justement(base_url=base_url, api_key=api_key, _strict_response_validation=True)
         with client as c2:
             assert c2 is client
             assert not c2.is_closed()
@@ -682,12 +650,7 @@ class TestJustement:
 
     def test_client_max_retries_validation(self) -> None:
         with pytest.raises(TypeError, match=r"max_retries cannot be None"):
-            Justement(
-                base_url=base_url,
-                bearer_token=bearer_token,
-                _strict_response_validation=True,
-                max_retries=cast(Any, None),
-            )
+            Justement(base_url=base_url, api_key=api_key, _strict_response_validation=True, max_retries=cast(Any, None))
 
     @pytest.mark.respx(base_url=base_url)
     def test_received_text_for_expected_json(self, respx_mock: MockRouter) -> None:
@@ -696,12 +659,12 @@ class TestJustement:
 
         respx_mock.get("/foo").mock(return_value=httpx.Response(200, text="my-custom-format"))
 
-        strict_client = Justement(base_url=base_url, bearer_token=bearer_token, _strict_response_validation=True)
+        strict_client = Justement(base_url=base_url, api_key=api_key, _strict_response_validation=True)
 
         with pytest.raises(APIResponseValidationError):
             strict_client.get("/foo", cast_to=Model)
 
-        client = Justement(base_url=base_url, bearer_token=bearer_token, _strict_response_validation=False)
+        client = Justement(base_url=base_url, api_key=api_key, _strict_response_validation=False)
 
         response = client.get("/foo", cast_to=Model)
         assert isinstance(response, str)  # type: ignore[unreachable]
@@ -729,32 +692,12 @@ class TestJustement:
     )
     @mock.patch("time.time", mock.MagicMock(return_value=1696004797))
     def test_parse_retry_after_header(self, remaining_retries: int, retry_after: str, timeout: float) -> None:
-        client = Justement(base_url=base_url, bearer_token=bearer_token, _strict_response_validation=True)
+        client = Justement(base_url=base_url, api_key=api_key, _strict_response_validation=True)
 
         headers = httpx.Headers({"retry-after": retry_after})
         options = FinalRequestOptions(method="get", url="/foo", max_retries=3)
         calculated = client._calculate_retry_timeout(remaining_retries, options, headers)
         assert calculated == pytest.approx(timeout, 0.5 * 0.875)  # pyright: ignore[reportUnknownMemberType]
-
-    @mock.patch("justement._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
-    @pytest.mark.respx(base_url=base_url)
-    def test_retrying_timeout_errors_doesnt_leak(self, respx_mock: MockRouter) -> None:
-        respx_mock.get("/api/search").mock(side_effect=httpx.TimeoutException("Test timeout error"))
-
-        with pytest.raises(APITimeoutError):
-            self.client.get("/api/search", cast_to=httpx.Response, options={"headers": {RAW_RESPONSE_HEADER: "stream"}})
-
-        assert _get_open_connections(self.client) == 0
-
-    @mock.patch("justement._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
-    @pytest.mark.respx(base_url=base_url)
-    def test_retrying_status_errors_doesnt_leak(self, respx_mock: MockRouter) -> None:
-        respx_mock.get("/api/search").mock(return_value=httpx.Response(500))
-
-        with pytest.raises(APIStatusError):
-            self.client.get("/api/search", cast_to=httpx.Response, options={"headers": {RAW_RESPONSE_HEADER: "stream"}})
-
-        assert _get_open_connections(self.client) == 0
 
     @pytest.mark.parametrize("failures_before_success", [0, 2, 4])
     @mock.patch("justement._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
@@ -782,7 +725,7 @@ class TestJustement:
 
         respx_mock.get("/api/search").mock(side_effect=retry_handler)
 
-        response = client.search_engine.with_raw_response.search()
+        response = client.document.with_raw_response.search()
 
         assert response.retries_taken == failures_before_success
         assert int(response.http_request.headers.get("x-stainless-retry-count")) == failures_before_success
@@ -806,7 +749,7 @@ class TestJustement:
 
         respx_mock.get("/api/search").mock(side_effect=retry_handler)
 
-        response = client.search_engine.with_raw_response.search(extra_headers={"x-stainless-retry-count": Omit()})
+        response = client.document.with_raw_response.search(extra_headers={"x-stainless-retry-count": Omit()})
 
         assert len(response.http_request.headers.get_list("x-stainless-retry-count")) == 0
 
@@ -829,13 +772,13 @@ class TestJustement:
 
         respx_mock.get("/api/search").mock(side_effect=retry_handler)
 
-        response = client.search_engine.with_raw_response.search(extra_headers={"x-stainless-retry-count": "42"})
+        response = client.document.with_raw_response.search(extra_headers={"x-stainless-retry-count": "42"})
 
         assert response.http_request.headers.get("x-stainless-retry-count") == "42"
 
 
 class TestAsyncJustement:
-    client = AsyncJustement(base_url=base_url, bearer_token=bearer_token, _strict_response_validation=True)
+    client = AsyncJustement(base_url=base_url, api_key=api_key, _strict_response_validation=True)
 
     @pytest.mark.respx(base_url=base_url)
     @pytest.mark.asyncio
@@ -863,9 +806,9 @@ class TestAsyncJustement:
         copied = self.client.copy()
         assert id(copied) != id(self.client)
 
-        copied = self.client.copy(bearer_token="another My Bearer Token")
-        assert copied.bearer_token == "another My Bearer Token"
-        assert self.client.bearer_token == "My Bearer Token"
+        copied = self.client.copy(api_key="another My API Key")
+        assert copied.api_key == "another My API Key"
+        assert self.client.api_key == "My API Key"
 
     def test_copy_default_options(self) -> None:
         # options that have a default are overridden correctly
@@ -885,10 +828,7 @@ class TestAsyncJustement:
 
     def test_copy_default_headers(self) -> None:
         client = AsyncJustement(
-            base_url=base_url,
-            bearer_token=bearer_token,
-            _strict_response_validation=True,
-            default_headers={"X-Foo": "bar"},
+            base_url=base_url, api_key=api_key, _strict_response_validation=True, default_headers={"X-Foo": "bar"}
         )
         assert client.default_headers["X-Foo"] == "bar"
 
@@ -922,7 +862,7 @@ class TestAsyncJustement:
 
     def test_copy_default_query(self) -> None:
         client = AsyncJustement(
-            base_url=base_url, bearer_token=bearer_token, _strict_response_validation=True, default_query={"foo": "bar"}
+            base_url=base_url, api_key=api_key, _strict_response_validation=True, default_query={"foo": "bar"}
         )
         assert _get_params(client)["foo"] == "bar"
 
@@ -1047,7 +987,7 @@ class TestAsyncJustement:
 
     async def test_client_timeout_option(self) -> None:
         client = AsyncJustement(
-            base_url=base_url, bearer_token=bearer_token, _strict_response_validation=True, timeout=httpx.Timeout(0)
+            base_url=base_url, api_key=api_key, _strict_response_validation=True, timeout=httpx.Timeout(0)
         )
 
         request = client._build_request(FinalRequestOptions(method="get", url="/foo"))
@@ -1058,7 +998,7 @@ class TestAsyncJustement:
         # custom timeout given to the httpx client should be used
         async with httpx.AsyncClient(timeout=None) as http_client:
             client = AsyncJustement(
-                base_url=base_url, bearer_token=bearer_token, _strict_response_validation=True, http_client=http_client
+                base_url=base_url, api_key=api_key, _strict_response_validation=True, http_client=http_client
             )
 
             request = client._build_request(FinalRequestOptions(method="get", url="/foo"))
@@ -1068,7 +1008,7 @@ class TestAsyncJustement:
         # no timeout given to the httpx client should not use the httpx default
         async with httpx.AsyncClient() as http_client:
             client = AsyncJustement(
-                base_url=base_url, bearer_token=bearer_token, _strict_response_validation=True, http_client=http_client
+                base_url=base_url, api_key=api_key, _strict_response_validation=True, http_client=http_client
             )
 
             request = client._build_request(FinalRequestOptions(method="get", url="/foo"))
@@ -1078,7 +1018,7 @@ class TestAsyncJustement:
         # explicitly passing the default timeout currently results in it being ignored
         async with httpx.AsyncClient(timeout=HTTPX_DEFAULT_TIMEOUT) as http_client:
             client = AsyncJustement(
-                base_url=base_url, bearer_token=bearer_token, _strict_response_validation=True, http_client=http_client
+                base_url=base_url, api_key=api_key, _strict_response_validation=True, http_client=http_client
             )
 
             request = client._build_request(FinalRequestOptions(method="get", url="/foo"))
@@ -1090,17 +1030,14 @@ class TestAsyncJustement:
             with httpx.Client() as http_client:
                 AsyncJustement(
                     base_url=base_url,
-                    bearer_token=bearer_token,
+                    api_key=api_key,
                     _strict_response_validation=True,
                     http_client=cast(Any, http_client),
                 )
 
     def test_default_headers_option(self) -> None:
         client = AsyncJustement(
-            base_url=base_url,
-            bearer_token=bearer_token,
-            _strict_response_validation=True,
-            default_headers={"X-Foo": "bar"},
+            base_url=base_url, api_key=api_key, _strict_response_validation=True, default_headers={"X-Foo": "bar"}
         )
         request = client._build_request(FinalRequestOptions(method="get", url="/foo"))
         assert request.headers.get("x-foo") == "bar"
@@ -1108,7 +1045,7 @@ class TestAsyncJustement:
 
         client2 = AsyncJustement(
             base_url=base_url,
-            bearer_token=bearer_token,
+            api_key=api_key,
             _strict_response_validation=True,
             default_headers={
                 "X-Foo": "stainless",
@@ -1120,21 +1057,18 @@ class TestAsyncJustement:
         assert request.headers.get("x-stainless-lang") == "my-overriding-header"
 
     def test_validate_headers(self) -> None:
-        client = AsyncJustement(base_url=base_url, bearer_token=bearer_token, _strict_response_validation=True)
+        client = AsyncJustement(base_url=base_url, api_key=api_key, _strict_response_validation=True)
         request = client._build_request(FinalRequestOptions(method="get", url="/foo"))
-        assert request.headers.get("Authorization") == f"Bearer {bearer_token}"
+        assert request.headers.get("Authorization") == f"Bearer {api_key}"
 
         with pytest.raises(JustementError):
-            with update_env(**{"BEARER_TOKEN": Omit()}):
-                client2 = AsyncJustement(base_url=base_url, bearer_token=None, _strict_response_validation=True)
+            with update_env(**{"API_KEY": Omit()}):
+                client2 = AsyncJustement(base_url=base_url, api_key=None, _strict_response_validation=True)
             _ = client2
 
     def test_default_query_option(self) -> None:
         client = AsyncJustement(
-            base_url=base_url,
-            bearer_token=bearer_token,
-            _strict_response_validation=True,
-            default_query={"query_param": "bar"},
+            base_url=base_url, api_key=api_key, _strict_response_validation=True, default_query={"query_param": "bar"}
         )
         request = client._build_request(FinalRequestOptions(method="get", url="/foo"))
         url = httpx.URL(request.url)
@@ -1335,7 +1269,7 @@ class TestAsyncJustement:
 
     def test_base_url_setter(self) -> None:
         client = AsyncJustement(
-            base_url="https://example.com/from_init", bearer_token=bearer_token, _strict_response_validation=True
+            base_url="https://example.com/from_init", api_key=api_key, _strict_response_validation=True
         )
         assert client.base_url == "https://example.com/from_init/"
 
@@ -1345,20 +1279,18 @@ class TestAsyncJustement:
 
     def test_base_url_env(self) -> None:
         with update_env(JUSTEMENT_BASE_URL="http://localhost:5000/from/env"):
-            client = AsyncJustement(bearer_token=bearer_token, _strict_response_validation=True)
+            client = AsyncJustement(api_key=api_key, _strict_response_validation=True)
             assert client.base_url == "http://localhost:5000/from/env/"
 
     @pytest.mark.parametrize(
         "client",
         [
             AsyncJustement(
-                base_url="http://localhost:5000/custom/path/",
-                bearer_token=bearer_token,
-                _strict_response_validation=True,
+                base_url="http://localhost:5000/custom/path/", api_key=api_key, _strict_response_validation=True
             ),
             AsyncJustement(
                 base_url="http://localhost:5000/custom/path/",
-                bearer_token=bearer_token,
+                api_key=api_key,
                 _strict_response_validation=True,
                 http_client=httpx.AsyncClient(),
             ),
@@ -1379,13 +1311,11 @@ class TestAsyncJustement:
         "client",
         [
             AsyncJustement(
-                base_url="http://localhost:5000/custom/path/",
-                bearer_token=bearer_token,
-                _strict_response_validation=True,
+                base_url="http://localhost:5000/custom/path/", api_key=api_key, _strict_response_validation=True
             ),
             AsyncJustement(
                 base_url="http://localhost:5000/custom/path/",
-                bearer_token=bearer_token,
+                api_key=api_key,
                 _strict_response_validation=True,
                 http_client=httpx.AsyncClient(),
             ),
@@ -1406,13 +1336,11 @@ class TestAsyncJustement:
         "client",
         [
             AsyncJustement(
-                base_url="http://localhost:5000/custom/path/",
-                bearer_token=bearer_token,
-                _strict_response_validation=True,
+                base_url="http://localhost:5000/custom/path/", api_key=api_key, _strict_response_validation=True
             ),
             AsyncJustement(
                 base_url="http://localhost:5000/custom/path/",
-                bearer_token=bearer_token,
+                api_key=api_key,
                 _strict_response_validation=True,
                 http_client=httpx.AsyncClient(),
             ),
@@ -1430,7 +1358,7 @@ class TestAsyncJustement:
         assert request.url == "https://myapi.com/foo"
 
     async def test_copied_client_does_not_close_http(self) -> None:
-        client = AsyncJustement(base_url=base_url, bearer_token=bearer_token, _strict_response_validation=True)
+        client = AsyncJustement(base_url=base_url, api_key=api_key, _strict_response_validation=True)
         assert not client.is_closed()
 
         copied = client.copy()
@@ -1442,7 +1370,7 @@ class TestAsyncJustement:
         assert not client.is_closed()
 
     async def test_client_context_manager(self) -> None:
-        client = AsyncJustement(base_url=base_url, bearer_token=bearer_token, _strict_response_validation=True)
+        client = AsyncJustement(base_url=base_url, api_key=api_key, _strict_response_validation=True)
         async with client as c2:
             assert c2 is client
             assert not c2.is_closed()
@@ -1465,10 +1393,7 @@ class TestAsyncJustement:
     async def test_client_max_retries_validation(self) -> None:
         with pytest.raises(TypeError, match=r"max_retries cannot be None"):
             AsyncJustement(
-                base_url=base_url,
-                bearer_token=bearer_token,
-                _strict_response_validation=True,
-                max_retries=cast(Any, None),
+                base_url=base_url, api_key=api_key, _strict_response_validation=True, max_retries=cast(Any, None)
             )
 
     @pytest.mark.respx(base_url=base_url)
@@ -1479,12 +1404,12 @@ class TestAsyncJustement:
 
         respx_mock.get("/foo").mock(return_value=httpx.Response(200, text="my-custom-format"))
 
-        strict_client = AsyncJustement(base_url=base_url, bearer_token=bearer_token, _strict_response_validation=True)
+        strict_client = AsyncJustement(base_url=base_url, api_key=api_key, _strict_response_validation=True)
 
         with pytest.raises(APIResponseValidationError):
             await strict_client.get("/foo", cast_to=Model)
 
-        client = AsyncJustement(base_url=base_url, bearer_token=bearer_token, _strict_response_validation=False)
+        client = AsyncJustement(base_url=base_url, api_key=api_key, _strict_response_validation=False)
 
         response = await client.get("/foo", cast_to=Model)
         assert isinstance(response, str)  # type: ignore[unreachable]
@@ -1513,36 +1438,12 @@ class TestAsyncJustement:
     @mock.patch("time.time", mock.MagicMock(return_value=1696004797))
     @pytest.mark.asyncio
     async def test_parse_retry_after_header(self, remaining_retries: int, retry_after: str, timeout: float) -> None:
-        client = AsyncJustement(base_url=base_url, bearer_token=bearer_token, _strict_response_validation=True)
+        client = AsyncJustement(base_url=base_url, api_key=api_key, _strict_response_validation=True)
 
         headers = httpx.Headers({"retry-after": retry_after})
         options = FinalRequestOptions(method="get", url="/foo", max_retries=3)
         calculated = client._calculate_retry_timeout(remaining_retries, options, headers)
         assert calculated == pytest.approx(timeout, 0.5 * 0.875)  # pyright: ignore[reportUnknownMemberType]
-
-    @mock.patch("justement._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
-    @pytest.mark.respx(base_url=base_url)
-    async def test_retrying_timeout_errors_doesnt_leak(self, respx_mock: MockRouter) -> None:
-        respx_mock.get("/api/search").mock(side_effect=httpx.TimeoutException("Test timeout error"))
-
-        with pytest.raises(APITimeoutError):
-            await self.client.get(
-                "/api/search", cast_to=httpx.Response, options={"headers": {RAW_RESPONSE_HEADER: "stream"}}
-            )
-
-        assert _get_open_connections(self.client) == 0
-
-    @mock.patch("justement._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
-    @pytest.mark.respx(base_url=base_url)
-    async def test_retrying_status_errors_doesnt_leak(self, respx_mock: MockRouter) -> None:
-        respx_mock.get("/api/search").mock(return_value=httpx.Response(500))
-
-        with pytest.raises(APIStatusError):
-            await self.client.get(
-                "/api/search", cast_to=httpx.Response, options={"headers": {RAW_RESPONSE_HEADER: "stream"}}
-            )
-
-        assert _get_open_connections(self.client) == 0
 
     @pytest.mark.parametrize("failures_before_success", [0, 2, 4])
     @mock.patch("justement._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
@@ -1571,7 +1472,7 @@ class TestAsyncJustement:
 
         respx_mock.get("/api/search").mock(side_effect=retry_handler)
 
-        response = await client.search_engine.with_raw_response.search()
+        response = await client.document.with_raw_response.search()
 
         assert response.retries_taken == failures_before_success
         assert int(response.http_request.headers.get("x-stainless-retry-count")) == failures_before_success
@@ -1596,9 +1497,7 @@ class TestAsyncJustement:
 
         respx_mock.get("/api/search").mock(side_effect=retry_handler)
 
-        response = await client.search_engine.with_raw_response.search(
-            extra_headers={"x-stainless-retry-count": Omit()}
-        )
+        response = await client.document.with_raw_response.search(extra_headers={"x-stainless-retry-count": Omit()})
 
         assert len(response.http_request.headers.get_list("x-stainless-retry-count")) == 0
 
@@ -1622,7 +1521,7 @@ class TestAsyncJustement:
 
         respx_mock.get("/api/search").mock(side_effect=retry_handler)
 
-        response = await client.search_engine.with_raw_response.search(extra_headers={"x-stainless-retry-count": "42"})
+        response = await client.document.with_raw_response.search(extra_headers={"x-stainless-retry-count": "42"})
 
         assert response.http_request.headers.get("x-stainless-retry-count") == "42"
 
