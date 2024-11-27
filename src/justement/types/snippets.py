@@ -4,13 +4,13 @@ from typing import List, Optional
 
 from pydantic import Field as FieldInfo
 
+from .snippet import Snippet
 from .._models import BaseModel
-from .search_result_snippet import SearchResultSnippet
 
-__all__ = ["SearchResultSnippets"]
+__all__ = ["Snippets"]
 
 
-class SearchResultSnippets(BaseModel):
+class Snippets(BaseModel):
     result_count: int = FieldInfo(alias="resultCount")
 
-    results: Optional[List[SearchResultSnippet]] = None
+    results: Optional[List[Snippet]] = None
