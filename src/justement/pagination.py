@@ -5,14 +5,13 @@ from typing_extensions import override
 
 from ._base_client import BasePage, PageInfo, BaseSyncPage, BaseAsyncPage
 
-__all__ = ["SyncPageNumberPagination", "AsyncPageNumberPagination"]
+__all__ = ["SyncJustementPagination", "AsyncJustementPagination"]
 
 _T = TypeVar("_T")
 
 
-class SyncPageNumberPagination(BaseSyncPage[_T], BasePage[_T], Generic[_T]):
+class SyncJustementPagination(BaseSyncPage[_T], BasePage[_T], Generic[_T]):
     results: List[_T]
-    result_count: Optional[int] = None
 
     @override
     def _get_page_items(self) -> List[_T]:
@@ -28,9 +27,8 @@ class SyncPageNumberPagination(BaseSyncPage[_T], BasePage[_T], Generic[_T]):
         return PageInfo(params={"page": last_page + 1})
 
 
-class AsyncPageNumberPagination(BaseAsyncPage[_T], BasePage[_T], Generic[_T]):
+class AsyncJustementPagination(BaseAsyncPage[_T], BasePage[_T], Generic[_T]):
     results: List[_T]
-    result_count: Optional[int] = None
 
     @override
     def _get_page_items(self) -> List[_T]:

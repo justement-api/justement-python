@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.1.0-alpha.2 (2024-11-27)
+
+Full Changelog: [v0.1.0-alpha.1...v0.1.0-alpha.2](https://github.com/justement-api/justement-python/compare/v0.1.0-alpha.1...v0.1.0-alpha.2)
+
+### Features
+
+* **api:** manual updates ([#9](https://github.com/justement-api/justement-python/issues/9)) ([634fa4e](https://github.com/justement-api/justement-python/commit/634fa4e9a141491d2e89472547c27b87a64d6742))
+
+
+### Chores
+
+* update SDK settings ([#7](https://github.com/justement-api/justement-python/issues/7)) ([b3a2bd7](https://github.com/justement-api/justement-python/commit/b3a2bd7be5475f61c94713809ebc5e608ed9c1cc))
+
 ## 0.1.0-alpha.1 (2024-11-26)
 
 Full Changelog: [v0.0.1-alpha.0...v0.1.0-alpha.1](https://github.com/justement-api/justement-python/compare/v0.0.1-alpha.0...v0.1.0-alpha.1)

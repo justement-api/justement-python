@@ -6,9 +6,9 @@ from typing_extensions import Required, Annotated, TypedDict
 
 from .._utils import PropertyInfo
 
-__all__ = ["DocumentRetrieveParams"]
+__all__ = ["DocumentByRefParams"]
 
 
-class DocumentRetrieveParams(TypedDict, total=False):
-    doc_id: Required[Annotated[str, PropertyInfo(alias="docId")]]
-    """The `docId` of the document that should be returned."""
+class DocumentByRefParams(TypedDict, total=False):
+    doc_ref: Required[Annotated[str, PropertyInfo(alias="docRef")]]
+    """The legal reference of the document."""
