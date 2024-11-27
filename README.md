@@ -28,20 +28,20 @@ import os
 from justement import Justement
 
 client = Justement(
-    bearer_token=os.environ.get("BEARER_TOKEN"),  # This is the default and can be omitted
+    api_key=os.environ.get("API_KEY"),  # This is the default and can be omitted
 )
 
-search_result_snippets = client.search_engine.search(
+page = client.document.search(
     language="de",
     query="art. 8 abs. 2 BV diskriminierung",
 )
-print(search_result_snippets.result_count)
+print(page.page)
 ```
 
-While you can provide a `bearer_token` keyword argument,
+While you can provide an `api_key` keyword argument,
 we recommend using [python-dotenv](https://pypi.org/project/python-dotenv/)
-to add `BEARER_TOKEN="My Bearer Token"` to your `.env` file
-so that your Bearer Token is not stored in source control.
+to add `API_KEY="My API Key"` to your `.env` file
+so that your API Key is not stored in source control.
 
 ## Async usage
 
@@ -53,16 +53,16 @@ import asyncio
 from justement import AsyncJustement
 
 client = AsyncJustement(
-    bearer_token=os.environ.get("BEARER_TOKEN"),  # This is the default and can be omitted
+    api_key=os.environ.get("API_KEY"),  # This is the default and can be omitted
 )
 
 
 async def main() -> None:
-    search_result_snippets = await client.search_engine.search(
+    page = await client.document.search(
         language="de",
         query="art. 8 abs. 2 BV diskriminierung",
     )
-    print(search_result_snippets.result_count)
+    print(page.page)
 
 
 asyncio.run(main())
@@ -78,6 +78,83 @@ Nested request parameters are [TypedDicts](https://docs.python.org/3/library/typ
 - Converting to a dictionary, `model.to_dict()`
 
 Typed requests and responses provide autocomplete and documentation within your editor. If you would like to see type errors in VS Code to help catch bugs earlier, set `python.analysis.typeCheckingMode` to `basic`.
+
+## Pagination
+
+List methods in the Justement API are paginated.
+
+This library provides auto-paginating iterators with each list response, so you do not have to request successive pages manually:
+
+```python
+from justement import Justement
+
+client = Justement()
+
+all_documents = []
+# Automatically fetches more pages as needed.
+for document in client.document.search(
+    language="de",
+    page=2,
+    query="art. 8 abs. 2 BV diskriminierung",
+):
+    # Do something with document here
+    all_documents.append(document)
+print(all_documents)
+```
+
+Or, asynchronously:
+
+```python
+import asyncio
+from justement import AsyncJustement
+
+client = AsyncJustement()
+
+
+async def main() -> None:
+    all_documents = []
+    # Iterate through items across all pages, issuing requests as needed.
+    async for document in client.document.search(
+        language="de",
+        page=2,
+        query="art. 8 abs. 2 BV diskriminierung",
+    ):
+        all_documents.append(document)
+    print(all_documents)
+
+
+asyncio.run(main())
+```
+
+Alternatively, you can use the `.has_next_page()`, `.next_page_info()`, or `.get_next_page()` methods for more granular control working with pages:
+
+```python
+first_page = await client.document.search(
+    language="de",
+    page=2,
+    query="art. 8 abs. 2 BV diskriminierung",
+)
+if first_page.has_next_page():
+    print(f"will fetch next page using these details: {first_page.next_page_info()}")
+    next_page = await first_page.get_next_page()
+    print(f"number of items we just fetched: {len(next_page.results)}")
+
+# Remove `await` for non-async usage.
+```
+
+Or just work directly with the returned data:
+
+```python
+first_page = await client.document.search(
+    language="de",
+    page=2,
+    query="art. 8 abs. 2 BV diskriminierung",
+)
+for document in first_page.results:
+    print(document.doc_id)
+
+# Remove `await` for non-async usage.
+```
 
 ## Handling errors
 
@@ -95,7 +172,7 @@ from justement import Justement
 client = Justement()
 
 try:
-    client.search_engine.search(
+    client.document.search(
         language="de",
         query="art. 8 abs. 2 BV diskriminierung",
     )
@@ -141,7 +218,7 @@ client = Justement(
 )
 
 # Or, configure per-request:
-client.with_options(max_retries=5).search_engine.search(
+client.with_options(max_retries=5).document.search(
     language="de",
     query="art. 8 abs. 2 BV diskriminierung",
 )
@@ -167,7 +244,7 @@ client = Justement(
 )
 
 # Override per-request:
-client.with_options(timeout=5.0).search_engine.search(
+client.with_options(timeout=5.0).document.search(
     language="de",
     query="art. 8 abs. 2 BV diskriminierung",
 )
@@ -211,14 +288,14 @@ The "raw" Response object can be accessed by prefixing `.with_raw_response.` to 
 from justement import Justement
 
 client = Justement()
-response = client.search_engine.with_raw_response.search(
+response = client.document.with_raw_response.search(
     language="de",
     query="art. 8 abs. 2 BV diskriminierung",
 )
 print(response.headers.get('X-My-Header'))
 
-search_engine = response.parse()  # get the object that `search_engine.search()` would have returned
-print(search_engine.result_count)
+document = response.parse()  # get the object that `document.search()` would have returned
+print(document.doc_id)
 ```
 
 These methods return an [`APIResponse`](https://github.com/justement-api/justement-python/tree/main/src/justement/_response.py) object.
@@ -232,7 +309,7 @@ The above interface eagerly reads the full response body when you make the reque
 To stream the response body, use `.with_streaming_response` instead, which requires a context manager and only reads the response body once you call `.read()`, `.text()`, `.json()`, `.iter_bytes()`, `.iter_text()`, `.iter_lines()` or `.parse()`. In the async client, these are async methods.
 
 ```python
-with client.search_engine.with_streaming_response.search(
+with client.document.with_streaming_response.search(
     language="de",
     query="art. 8 abs. 2 BV diskriminierung",
 ) as response:

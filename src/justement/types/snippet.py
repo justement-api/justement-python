@@ -5,10 +5,10 @@ from pydantic import Field as FieldInfo
 
 from .._models import BaseModel
 
-__all__ = ["SearchResultSnippet"]
+__all__ = ["Snippet"]
 
 
-class SearchResultSnippet(BaseModel):
+class Snippet(BaseModel):
     doc_id: str = FieldInfo(alias="docId")
 
     document_url: str = FieldInfo(alias="documentUrl")
