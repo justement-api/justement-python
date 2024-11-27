@@ -47,7 +47,6 @@ __all__ = [
 
 class Justement(SyncAPIClient):
     document: resources.DocumentResource
-    snippet: resources.SnippetResource
     with_raw_response: JustementWithRawResponse
     with_streaming_response: JustementWithStreamedResponse
 
@@ -106,7 +105,6 @@ class Justement(SyncAPIClient):
         )
 
         self.document = resources.DocumentResource(self)
-        self.snippet = resources.SnippetResource(self)
         self.with_raw_response = JustementWithRawResponse(self)
         self.with_streaming_response = JustementWithStreamedResponse(self)
 
@@ -217,7 +215,6 @@ class Justement(SyncAPIClient):
 
 class AsyncJustement(AsyncAPIClient):
     document: resources.AsyncDocumentResource
-    snippet: resources.AsyncSnippetResource
     with_raw_response: AsyncJustementWithRawResponse
     with_streaming_response: AsyncJustementWithStreamedResponse
 
@@ -276,7 +273,6 @@ class AsyncJustement(AsyncAPIClient):
         )
 
         self.document = resources.AsyncDocumentResource(self)
-        self.snippet = resources.AsyncSnippetResource(self)
         self.with_raw_response = AsyncJustementWithRawResponse(self)
         self.with_streaming_response = AsyncJustementWithStreamedResponse(self)
 
@@ -388,25 +384,21 @@ class AsyncJustement(AsyncAPIClient):
 class JustementWithRawResponse:
     def __init__(self, client: Justement) -> None:
         self.document = resources.DocumentResourceWithRawResponse(client.document)
-        self.snippet = resources.SnippetResourceWithRawResponse(client.snippet)
 
 
 class AsyncJustementWithRawResponse:
     def __init__(self, client: AsyncJustement) -> None:
         self.document = resources.AsyncDocumentResourceWithRawResponse(client.document)
-        self.snippet = resources.AsyncSnippetResourceWithRawResponse(client.snippet)
 
 
 class JustementWithStreamedResponse:
     def __init__(self, client: Justement) -> None:
         self.document = resources.DocumentResourceWithStreamingResponse(client.document)
-        self.snippet = resources.SnippetResourceWithStreamingResponse(client.snippet)
 
 
 class AsyncJustementWithStreamedResponse:
     def __init__(self, client: AsyncJustement) -> None:
         self.document = resources.AsyncDocumentResourceWithStreamingResponse(client.document)
-        self.snippet = resources.AsyncSnippetResourceWithStreamingResponse(client.snippet)
 
 
 Client = Justement

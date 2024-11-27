@@ -13,12 +13,6 @@ Methods:
 - <code title="get /api/count">client.document.<a href="./src/justement/resources/document.py">count</a>(\*\*<a href="src/justement/types/document_count_params.py">params</a>) -> <a href="./src/justement/types/document_count_response.py">DocumentCountResponse</a></code>
 - <code title="get /api/search">client.document.<a href="./src/justement/resources/document.py">search</a>(\*\*<a href="src/justement/types/document_search_params.py">params</a>) -> <a href="./src/justement/types/snippet.py">SyncJustementPagination[Snippet]</a></code>
 
-# Snippet
-
-Methods:
-
-- <code title="get /api/document">client.snippet.<a href="./src/justement/resources/snippet.py">document</a>(\*\*<a href="src/justement/types/snippet_document_params.py">params</a>) -> <a href="./src/justement/types/document.py">Document</a></code>
-
 # Errors
 
 Types:

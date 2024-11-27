@@ -11,4 +11,3 @@ from .document_count_params import DocumentCountParams as DocumentCountParams
 from .document_by_ref_params import DocumentByRefParams as DocumentByRefParams
 from .document_search_params import DocumentSearchParams as DocumentSearchParams
 from .document_count_response import DocumentCountResponse as DocumentCountResponse
-from .snippet_document_params import SnippetDocumentParams as SnippetDocumentParams
