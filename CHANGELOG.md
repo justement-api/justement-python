@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.1.0-alpha.4 (2024-11-28)
+
+Full Changelog: [v0.1.0-alpha.3...v0.1.0-alpha.4](https://github.com/justement-api/justement-python/compare/v0.1.0-alpha.3...v0.1.0-alpha.4)
+
+### Features
+
+* **api:** manual updates ([#17](https://github.com/justement-api/justement-python/issues/17)) ([852cabd](https://github.com/justement-api/justement-python/commit/852cabdd488a51b44a597f7a9347fc3c78df1ff5))
+
+
+### Bug Fixes
+
+* **client:** compat with new httpx 0.28.0 release ([#16](https://github.com/justement-api/justement-python/issues/16)) ([5b8c63c](https://github.com/justement-api/justement-python/commit/5b8c63c61910b9381e7065b66c6ae54ea1c504d0))
+
+
+### Chores
+
+* **internal:** exclude mypy from running on tests ([#14](https://github.com/justement-api/justement-python/issues/14)) ([454706d](https://github.com/justement-api/justement-python/commit/454706d5dfa3ece84f710214037706e2596ee01d))
+
 ## 0.1.0-alpha.3 (2024-11-27)
 
 Full Changelog: [v0.1.0-alpha.2...v0.1.0-alpha.3](https://github.com/justement-api/justement-python/compare/v0.1.0-alpha.2...v0.1.0-alpha.3)
