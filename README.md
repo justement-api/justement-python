@@ -173,7 +173,6 @@ client = Justement()
 
 try:
     client.document.search(
-        language="de",
         query="art. 8 abs. 2 BV diskriminierung",
     )
 except justement.APIConnectionError as e:
@@ -219,7 +218,6 @@ client = Justement(
 
 # Or, configure per-request:
 client.with_options(max_retries=5).document.search(
-    language="de",
     query="art. 8 abs. 2 BV diskriminierung",
 )
 ```
@@ -245,7 +243,6 @@ client = Justement(
 
 # Override per-request:
 client.with_options(timeout=5.0).document.search(
-    language="de",
     query="art. 8 abs. 2 BV diskriminierung",
 )
 ```
@@ -289,7 +286,6 @@ from justement import Justement
 
 client = Justement()
 response = client.document.with_raw_response.search(
-    language="de",
     query="art. 8 abs. 2 BV diskriminierung",
 )
 print(response.headers.get('X-My-Header'))
@@ -310,7 +306,6 @@ To stream the response body, use `.with_streaming_response` instead, which requi
 
 ```python
 with client.document.with_streaming_response.search(
-    language="de",
     query="art. 8 abs. 2 BV diskriminierung",
 ) as response:
     print(response.headers.get("X-My-Header"))
