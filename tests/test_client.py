@@ -330,7 +330,7 @@ class TestJustement:
         assert request.headers.get("Authorization") == f"Bearer {api_key}"
 
         with pytest.raises(JustementError):
-            with update_env(**{"API_KEY": Omit()}):
+            with update_env(**{"JUSTEMENT_API_KEY": Omit()}):
                 client2 = Justement(base_url=base_url, api_key=None, _strict_response_validation=True)
             _ = client2
 
@@ -1062,7 +1062,7 @@ class TestAsyncJustement:
         assert request.headers.get("Authorization") == f"Bearer {api_key}"
 
         with pytest.raises(JustementError):
-            with update_env(**{"API_KEY": Omit()}):
+            with update_env(**{"JUSTEMENT_API_KEY": Omit()}):
                 client2 = AsyncJustement(base_url=base_url, api_key=None, _strict_response_validation=True)
             _ = client2
 
