@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.0-alpha.7 (2024-12-04)
+
+Full Changelog: [v0.1.0-alpha.6...v0.1.0-alpha.7](https://github.com/justement-api/justement-python/compare/v0.1.0-alpha.6...v0.1.0-alpha.7)
+
+### Chores
+
+* **internal:** bump pyright ([#26](https://github.com/justement-api/justement-python/issues/26)) ([47205a3](https://github.com/justement-api/justement-python/commit/47205a39cda28d00b445dcb5970ec7ac44ab63e9))
+* make the `Omit` type public ([#28](https://github.com/justement-api/justement-python/issues/28)) ([22f180e](https://github.com/justement-api/justement-python/commit/22f180ee52eccd6c72a22d6f94a1ed1d7711f939))
+
 ## 0.1.0-alpha.6 (2024-12-02)
 
 Full Changelog: [v0.1.0-alpha.5...v0.1.0-alpha.6](https://github.com/justement-api/justement-python/compare/v0.1.0-alpha.5...v0.1.0-alpha.6)
