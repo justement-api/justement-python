@@ -60,6 +60,7 @@ class DocumentResource(SyncAPIResource):
         self,
         *,
         doc_id: str,
+        language: Language | NotGiven = NOT_GIVEN,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
@@ -76,6 +77,8 @@ class DocumentResource(SyncAPIResource):
         Args:
           doc_id: The `docId` of the document that should be returned.
 
+          language: Preferred language for article references.
+
           extra_headers: Send extra headers
 
           extra_query: Add additional query parameters to the request
@@ -91,7 +94,13 @@ class DocumentResource(SyncAPIResource):
                 extra_query=extra_query,
                 extra_body=extra_body,
                 timeout=timeout,
-                query=maybe_transform({"doc_id": doc_id}, document_by_id_params.DocumentByIDParams),
+                query=maybe_transform(
+                    {
+                        "doc_id": doc_id,
+                        "language": language,
+                    },
+                    document_by_id_params.DocumentByIDParams,
+                ),
             ),
             cast_to=Document,
         )
@@ -100,6 +109,7 @@ class DocumentResource(SyncAPIResource):
         self,
         *,
         doc_ref: str,
+        language: Language | NotGiven = NOT_GIVEN,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
@@ -116,6 +126,8 @@ class DocumentResource(SyncAPIResource):
         Args:
           doc_ref: The legal reference of the document.
 
+          language: Preferred language for article references.
+
           extra_headers: Send extra headers
 
           extra_query: Add additional query parameters to the request
@@ -131,7 +143,13 @@ class DocumentResource(SyncAPIResource):
                 extra_query=extra_query,
                 extra_body=extra_body,
                 timeout=timeout,
-                query=maybe_transform({"doc_ref": doc_ref}, document_by_ref_params.DocumentByRefParams),
+                query=maybe_transform(
+                    {
+                        "doc_ref": doc_ref,
+                        "language": language,
+                    },
+                    document_by_ref_params.DocumentByRefParams,
+                ),
             ),
             cast_to=Document,
         )
@@ -401,6 +419,7 @@ class AsyncDocumentResource(AsyncAPIResource):
         self,
         *,
         doc_id: str,
+        language: Language | NotGiven = NOT_GIVEN,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
@@ -417,6 +436,8 @@ class AsyncDocumentResource(AsyncAPIResource):
         Args:
           doc_id: The `docId` of the document that should be returned.
 
+          language: Preferred language for article references.
+
           extra_headers: Send extra headers
 
           extra_query: Add additional query parameters to the request
@@ -432,7 +453,13 @@ class AsyncDocumentResource(AsyncAPIResource):
                 extra_query=extra_query,
                 extra_body=extra_body,
                 timeout=timeout,
-                query=await async_maybe_transform({"doc_id": doc_id}, document_by_id_params.DocumentByIDParams),
+                query=await async_maybe_transform(
+                    {
+                        "doc_id": doc_id,
+                        "language": language,
+                    },
+                    document_by_id_params.DocumentByIDParams,
+                ),
             ),
             cast_to=Document,
         )
@@ -441,6 +468,7 @@ class AsyncDocumentResource(AsyncAPIResource):
         self,
         *,
         doc_ref: str,
+        language: Language | NotGiven = NOT_GIVEN,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
@@ -457,6 +485,8 @@ class AsyncDocumentResource(AsyncAPIResource):
         Args:
           doc_ref: The legal reference of the document.
 
+          language: Preferred language for article references.
+
           extra_headers: Send extra headers
 
           extra_query: Add additional query parameters to the request
@@ -472,7 +502,13 @@ class AsyncDocumentResource(AsyncAPIResource):
                 extra_query=extra_query,
                 extra_body=extra_body,
                 timeout=timeout,
-                query=await async_maybe_transform({"doc_ref": doc_ref}, document_by_ref_params.DocumentByRefParams),
+                query=await async_maybe_transform(
+                    {
+                        "doc_ref": doc_ref,
+                        "language": language,
+                    },
+                    document_by_ref_params.DocumentByRefParams,
+                ),
             ),
             cast_to=Document,
         )

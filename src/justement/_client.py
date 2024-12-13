@@ -8,7 +8,7 @@ from typing_extensions import Self, override
 
 import httpx
 
-from . import resources, _exceptions
+from . import _exceptions
 from ._qs import Querystring
 from ._types import (
     NOT_GIVEN,
@@ -24,6 +24,7 @@ from ._utils import (
     get_async_library,
 )
 from ._version import __version__
+from .resources import document
 from ._streaming import Stream as Stream, AsyncStream as AsyncStream
 from ._exceptions import APIStatusError, JustementError
 from ._base_client import (
@@ -37,7 +38,6 @@ __all__ = [
     "Transport",
     "ProxiesTypes",
     "RequestOptions",
-    "resources",
     "Justement",
     "AsyncJustement",
     "Client",
@@ -46,7 +46,7 @@ __all__ = [
 
 
 class Justement(SyncAPIClient):
-    document: resources.DocumentResource
+    document: document.DocumentResource
     with_raw_response: JustementWithRawResponse
     with_streaming_response: JustementWithStreamedResponse
 
@@ -104,7 +104,7 @@ class Justement(SyncAPIClient):
             _strict_response_validation=_strict_response_validation,
         )
 
-        self.document = resources.DocumentResource(self)
+        self.document = document.DocumentResource(self)
         self.with_raw_response = JustementWithRawResponse(self)
         self.with_streaming_response = JustementWithStreamedResponse(self)
 
@@ -214,7 +214,7 @@ class Justement(SyncAPIClient):
 
 
 class AsyncJustement(AsyncAPIClient):
-    document: resources.AsyncDocumentResource
+    document: document.AsyncDocumentResource
     with_raw_response: AsyncJustementWithRawResponse
     with_streaming_response: AsyncJustementWithStreamedResponse
 
@@ -272,7 +272,7 @@ class AsyncJustement(AsyncAPIClient):
             _strict_response_validation=_strict_response_validation,
         )
 
-        self.document = resources.AsyncDocumentResource(self)
+        self.document = document.AsyncDocumentResource(self)
         self.with_raw_response = AsyncJustementWithRawResponse(self)
         self.with_streaming_response = AsyncJustementWithStreamedResponse(self)
 
@@ -383,22 +383,22 @@ class AsyncJustement(AsyncAPIClient):
 
 class JustementWithRawResponse:
     def __init__(self, client: Justement) -> None:
-        self.document = resources.DocumentResourceWithRawResponse(client.document)
+        self.document = document.DocumentResourceWithRawResponse(client.document)
 
 
 class AsyncJustementWithRawResponse:
     def __init__(self, client: AsyncJustement) -> None:
-        self.document = resources.AsyncDocumentResourceWithRawResponse(client.document)
+        self.document = document.AsyncDocumentResourceWithRawResponse(client.document)
 
 
 class JustementWithStreamedResponse:
     def __init__(self, client: Justement) -> None:
-        self.document = resources.DocumentResourceWithStreamingResponse(client.document)
+        self.document = document.DocumentResourceWithStreamingResponse(client.document)
 
 
 class AsyncJustementWithStreamedResponse:
     def __init__(self, client: AsyncJustement) -> None:
-        self.document = resources.AsyncDocumentResourceWithStreamingResponse(client.document)
+        self.document = document.AsyncDocumentResourceWithStreamingResponse(client.document)
 
 
 Client = Justement
