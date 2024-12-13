@@ -1,5 +1,6 @@
 # File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
 
+from typing import List, Optional
 
 from pydantic import Field as FieldInfo
 
@@ -22,3 +23,7 @@ class Document(BaseModel):
     url: str
 
     year: int
+
+    doc_ref: Optional[List[str]] = FieldInfo(alias="docRef", default=None)
+
+    law_ref: Optional[List[str]] = FieldInfo(alias="lawRef", default=None)
