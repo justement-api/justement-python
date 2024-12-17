@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.1.0-alpha.7 (2024-12-17)
+
+Full Changelog: [v0.1.0-alpha.6...v0.1.0-alpha.7](https://github.com/justement-api/justement-python/compare/v0.1.0-alpha.6...v0.1.0-alpha.7)
+
+### Features
+
+* **api:** api update ([#29](https://github.com/justement-api/justement-python/issues/29)) ([764b45b](https://github.com/justement-api/justement-python/commit/764b45b6636521f1ce38bb0725bbecea5896c7df))
+
+
+### Chores
+
+* **internal:** bump pyright ([#26](https://github.com/justement-api/justement-python/issues/26)) ([47205a3](https://github.com/justement-api/justement-python/commit/47205a39cda28d00b445dcb5970ec7ac44ab63e9))
+* **internal:** codegen related update ([#30](https://github.com/justement-api/justement-python/issues/30)) ([ef056bb](https://github.com/justement-api/justement-python/commit/ef056bbcbaaf23313b510584778049c42b5caae1))
+* **internal:** codegen related update ([#31](https://github.com/justement-api/justement-python/issues/31)) ([679c403](https://github.com/justement-api/justement-python/commit/679c403e580d438990a844412ccf025b65c414e4))
+* make the `Omit` type public ([#28](https://github.com/justement-api/justement-python/issues/28)) ([22f180e](https://github.com/justement-api/justement-python/commit/22f180ee52eccd6c72a22d6f94a1ed1d7711f939))
+
+
+### Documentation
+
+* **readme:** example snippet for client context manager ([#32](https://github.com/justement-api/justement-python/issues/32)) ([6ccf998](https://github.com/justement-api/justement-python/commit/6ccf9987583d0dc797d6ddce4910a7aac229e49a))
+
 ## 0.1.0-alpha.6 (2024-12-02)
 
 Full Changelog: [v0.1.0-alpha.5...v0.1.0-alpha.6](https://github.com/justement-api/justement-python/compare/v0.1.0-alpha.5...v0.1.0-alpha.6)
