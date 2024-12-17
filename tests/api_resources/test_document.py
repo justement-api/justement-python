@@ -30,6 +30,14 @@ class TestDocument:
         assert_matches_type(Document, document, path=["response"])
 
     @parametrize
+    def test_method_by_id_with_all_params(self, client: Justement) -> None:
+        document = client.document.by_id(
+            doc_id="docId",
+            language="de",
+        )
+        assert_matches_type(Document, document, path=["response"])
+
+    @parametrize
     def test_raw_response_by_id(self, client: Justement) -> None:
         response = client.document.with_raw_response.by_id(
             doc_id="docId",
@@ -57,6 +65,14 @@ class TestDocument:
     def test_method_by_ref(self, client: Justement) -> None:
         document = client.document.by_ref(
             doc_ref="docRef",
+        )
+        assert_matches_type(Document, document, path=["response"])
+
+    @parametrize
+    def test_method_by_ref_with_all_params(self, client: Justement) -> None:
+        document = client.document.by_ref(
+            doc_ref="docRef",
+            language="de",
         )
         assert_matches_type(Document, document, path=["response"])
 
@@ -164,6 +180,14 @@ class TestAsyncDocument:
         assert_matches_type(Document, document, path=["response"])
 
     @parametrize
+    async def test_method_by_id_with_all_params(self, async_client: AsyncJustement) -> None:
+        document = await async_client.document.by_id(
+            doc_id="docId",
+            language="de",
+        )
+        assert_matches_type(Document, document, path=["response"])
+
+    @parametrize
     async def test_raw_response_by_id(self, async_client: AsyncJustement) -> None:
         response = await async_client.document.with_raw_response.by_id(
             doc_id="docId",
@@ -191,6 +215,14 @@ class TestAsyncDocument:
     async def test_method_by_ref(self, async_client: AsyncJustement) -> None:
         document = await async_client.document.by_ref(
             doc_ref="docRef",
+        )
+        assert_matches_type(Document, document, path=["response"])
+
+    @parametrize
+    async def test_method_by_ref_with_all_params(self, async_client: AsyncJustement) -> None:
+        document = await async_client.document.by_ref(
+            doc_ref="docRef",
+            language="de",
         )
         assert_matches_type(Document, document, path=["response"])
 
